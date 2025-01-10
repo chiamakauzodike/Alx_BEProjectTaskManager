@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-import os
+import environ
+
+env = environ.Env()
+environ.Env.read_env(env_file='.env')
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,8 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1df)mb7ei(wi8=880-!s+*=sn7wk78$rb=a$(j=bn@(+h)2c*5'
-#SECRET_KEY : os.getenv('DJANGO_SECRET_KEY')
+SECRET_KEY = env('DB_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -45,7 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     # my app
-    #'task_management_api',
+    'task_management_api',
     'tasks',
 ]
 
@@ -88,20 +90,13 @@ WSGI_APPLICATION = 'task_management_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        #'NAME': BASE_DIR / 'db.postgresql',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
     }
 }
-
-DATABASES = {
-    'default': {
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
-    }
-}
-
 
 
 # Password validation
@@ -143,6 +138,8 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATIC_URL = 'static/'
 
+MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -155,3 +152,5 @@ REST_FRAMEWORK = {
     ],
 }
 
+import django_heroku
+django_heroku.settings(locals())

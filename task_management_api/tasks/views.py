@@ -10,15 +10,20 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import BasePermission
+from rest_framework.authentication import TokenAuthentication
 
 class IsOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
+        if request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return True
         return obj.user == request.user
 
 
 # Tasks Management views
 class TaskViewSet(viewsets.ModelViewSet):
+    queryset = Task.objects.none()  # Placeholder
     serializer_class = TaskSerializer
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, IsOwner]
 
     def get_queryset(self):
@@ -36,7 +41,7 @@ class TaskViewSet(viewsets.ModelViewSet):
             task.status = 'Completed'
         task.save()
         return Response({'status': task.status, 'completed_at': task.completed_at}, status=status.HTTP_200_OK)
-    
+    # sorting task by due date , priority level
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['status', 'priority', 'due_date']
     ordering_fields = ['due_date', 'priority']
