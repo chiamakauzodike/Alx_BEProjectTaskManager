@@ -1,0 +1,5 @@
+.env
+__Pycache__
+venv
+.sqlite3
+static/
