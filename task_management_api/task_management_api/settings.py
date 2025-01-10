@@ -31,7 +31,7 @@ SECRET_KEY = env('DB_SECRET_KEY')
 DEBUG = True
 
 # adding the heroku domain for production
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['chiamakauzodike.pythonanywhere.com']
 
 
 # Application definition
